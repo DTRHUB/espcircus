@@ -1,40 +1,19 @@
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
--- Function to add Highlight to a player's character
-local function addHighlightToCharacter(character)
-    local highlight = Instance.new("Highlight") -- Create a Highlight instance
-    highlight.Parent = character
-    highlight.Adornee = character -- Attach Highlight to the player's character
-    highlight.FillColor = Color3.new(1, 0, 0) -- Red fill color
-    highlight.OutlineColor = Color3.new(1, 1, 1) -- White outline color
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop -- Makes the Highlight visible through walls
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local function highlightPlayers()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            local highlight = Instance.new("Highlight")
+            highlight.Parent = player.Character
+            highlight.FillColor = Color3.fromRGB(0, 255, 0)
+            highlight.FillTransparency = 0.5
+            highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
+            highlight.OutlineTransparency = 0
+        end
+    end
 end
 
--- Function to manage a single player
-local function managePlayer(player)
-    -- Ignore the local player
-    if player == game.Players.LocalPlayer then
-        return
-    end
-
-    -- Add Highlight if the character is already loaded
-    if player.Character then
-        addHighlightToCharacter(player.Character)
-    end
-
-    -- Add Highlight to the character whenever it's added or changed
-    player.CharacterAdded:Connect(function(character)
-        addHighlightToCharacter(character)
-    end)
-end
-
--- Handle new players joining
-game.Players.PlayerAdded:Connect(function(player)
-    managePlayer(player)
+RunService.Heartbeat:Connect(function()
+    highlightPlayers()
 end)
-
--- Handle players already in the server
-for _, player in pairs(game.Players:GetPlayers()) do
-    managePlayer(player)
-end
